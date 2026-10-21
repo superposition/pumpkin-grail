@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎃 The Great Pumpkin — Holy Grail</title>
+<style>
+  :root { --pumpkin: #ff7518; --pumpkin-dark: #c43d00; --ink: #2a1608; --cream: #fff3e0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: var(--ink); color: var(--cream); }
+  header { background: var(--pumpkin); color: var(--ink); padding: 2rem 1rem; text-align: center; }
+  header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 0.05em; }
+  header p { margin: 0.5rem 0 0; font-style: italic; }
+  nav, aside { background: #3a1e0b; padding: 1rem; }
+  nav ul { list-style: none; padding: 0; margin: 0; }
+  nav li { padding: 0.4rem 0; border-bottom: 1px solid #5a3317; }
+  nav li:last-child { border-bottom: none; }
+  main { background: #2a1608; padding: 1.5rem; }
+  main h2 { color: var(--pumpkin); }
+  aside { background: #3a1e0b; }
+  aside h3 { color: var(--pumpkin); }
+  footer { background: var(--pumpkin-dark); color: var(--cream); text-align: center; padding: 1rem; }
+  .holy-grail { display: flex; flex-direction: column; min-height: 100vh; }
+  .holy-grail > header { flex: 0 0 auto; }
+  .holy-grail > nav { order: 2; flex: 1; }
+  .holy-grail > main { order: 3; flex: 2; }
+  .holy-grail > aside { order: 4; flex: 1; }
+  .holy-grail > footer { order: 5; flex: 0 0 auto; }
+  @media (min-width: 900px) {
+    .holy-grail { flex-direction: row; }
+    .holy-grail > nav { order: 2; }
+    .holy-grail > main { order: 3; }
+    .holy-grail > aside { order: 4; }
+  }
+</style>
+</head>
+<body>
+<div class="holy-grail">
+  <header>
+    <h1>🎃 THE GREAT PUMPKIN</h1>
+    <p>the most orange. the most round. the most legendary.</p>
+  </header>
+  <nav>
+    <ul>
+      <li>Roasted</li>
+      <li>Pumpkin Spice</li>
+      <li>Carving</li>
+      <li>Seeds</li>
+    </ul>
+  </nav>
+  <main>
+    <h2>The Great Pumpkin</h2>
+    <p>The biggest pumpkin in the patch. The most orange. The most round. The most legendary. One patch, one vote, one champion.</p>
+  </main>
+  <aside>
+    <h3>Facts</h3>
+    <p>1 patch = 1 vote</p>
+    <p>Orange is the new orange</p>
+    <p>Size matters</p>
+  </aside>
+  <footer>
+    <p>Copyright Pumpkin Inc. All rights reserved.</p>
+  </footer>
+</div>
+</body>
+</html>
