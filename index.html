@@ -8,9 +8,17 @@
   :root { --pumpkin: #ff7518; --pumpkin-dark: #c43d00; --ink: #2a1608; --cream: #fff3e0; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: var(--ink); color: var(--cream); }
-  header { background: var(--pumpkin); color: var(--ink); padding: 2rem 1rem; text-align: center; }
-  header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 0.05em; }
-  header p { margin: 0.5rem 0 0; font-style: italic; }
+  header { background: var(--pumpkin); color: var(--ink); padding: 2rem 1rem; text-align: center; overflow: hidden; }
+  header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 0.05em; display: inline-block; animation: pumpkin-drop 1.4s ease-in both, pumpkin-float 4s ease-in-out 1.4s infinite; }
+  header p { margin: 0.5rem 0 0; font-style: italic; animation: pumpkin-drop 1.4s ease-in 0.35s both; }
+  @keyframes pumpkin-drop {
+    from { opacity: 0; transform: translateY(-60px) scale(0.8); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes pumpkin-float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-14px) rotate(5deg); }
+  }
   nav, aside { background: #3a1e0b; padding: 1rem; }
   nav ul { list-style: none; padding: 0; margin: 0; }
   nav li { padding: 0.4rem 0; border-bottom: 1px solid #5a3317; }
