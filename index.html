@@ -19,6 +19,16 @@
     0%, 100% { transform: translateY(0) rotate(-5deg); }
     50% { transform: translateY(-14px) rotate(5deg); }
   }
+  .p3d-scene { width: 140px; height: 140px; margin: 0 auto; perspective: 700px; }
+  .p3d-cube { width: 140px; height: 140px; position: relative; transform-style: preserve-3d; animation: pumpkin-float 5s ease-in-out infinite; }
+  .p3d-face { position: absolute; inset: 0; background: linear-gradient(145deg, #ff8c42, #e85d10); border: 8px solid #7a2e00; }
+  .f-front { transform: rotateY(0deg) translateZ(70px); }
+  .f-back { transform: rotateY(180deg) translateZ(70px); }
+  .f-right { transform: rotateY(90deg) translateZ(70px); }
+  .f-left { transform: rotateY(-90deg) translateZ(70px); }
+  .f-top { transform: rotateX(90deg) translateZ(70px); }
+  .f-bottom { transform: rotateX(-90deg) translateZ(70px); }
+  .p3d-stem { position: absolute; top: -40px; left: 50%; width: 16px; height: 44px; margin-left: -8px; background: #6b3a12; border-radius: 8px; transform-origin: top center; animation: pumpkin-float 5s ease-in-out infinite; }
   nav, aside { background: #3a1e0b; padding: 1rem; }
   nav ul { list-style: none; padding: 0; margin: 0; }
   nav li { padding: 0.4rem 0; border-bottom: 1px solid #5a3317; }
@@ -40,11 +50,24 @@
     .holy-grail > main { order: 3; }
     .holy-grail > aside { order: 4; }
   }
+  .game-wrap { margin-top: 1rem; }
+  #game { display: block; width: 100%; height: 320px; background: #14060a; border: 2px solid #ff7518; border-radius: 8px; }
 </style>
 </head>
 <body>
 <div class="holy-grail">
   <header>
+    <div class="p3d-scene">
+      <div class="p3d-cube">
+        <div class="p3d-face f-front"></div>
+        <div class="p3d-face f-back"></div>
+        <div class="p3d-face f-right"></div>
+        <div class="p3d-face f-left"></div>
+        <div class="p3d-face f-top"></div>
+        <div class="p3d-face f-bottom"></div>
+      </div>
+      <div class="p3d-stem"></div>
+    </div>
     <h1>🎃 THE GREAT PUMPKIN</h1>
     <p>the most orange. the most round. the most legendary.</p>
   </header>
@@ -59,6 +82,9 @@
   <main>
     <h2>The Great Pumpkin</h2>
     <p>The biggest pumpkin in the patch. The most orange. The most round. The most legendary. One patch, one vote, one champion.</p>
+    <div class="game-wrap">
+      <canvas id="game"></canvas>
+    </div>
   </main>
   <aside>
     <h3>Facts</h3>
@@ -70,5 +96,103 @@
     <p>Copyright Pumpkin Inc. All rights reserved.</p>
   </footer>
 </div>
+<script>
+(function(){
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const GW = 800, GH = 320;
+  canvas.width = GW;
+  canvas.height = GH;
+  const player = { x: 180, y: 230, w: 46, h: 46 };
+  let seeds = [];
+  let enemies = [];
+  let score = 0;
+  let over = false;
+  let lastSpawn = 0;
+  let last = 0;
+  const keys = {};
+
+  function reset() { seeds = []; enemies = []; score = 0; over = false; player.x = 180; }
+
+  function shoot() {
+    if (seeds.length < 5) {
+      seeds.push({ x: player.x + player.w / 2 - 3, y: player.y - 30, w: 6, h: 14, speed: -9 });
+    }
+  }
+
+  function spawn() {
+    enemies.push({ x: GW, y: 30 + Math.random() * GH * 0.45, w: 46, h: 46, speed: 1.6 + Math.random() * 2.2, hp: 1 });
+  }
+
+  function update(ts) {
+    if (over) return;
+    if (ts - lastSpawn > 650 + Math.random() * 450) { spawn(); lastSpawn = ts; }
+    if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.x -= 6;
+    if (keys['ArrowRight'] || keys['d'] || keys['D']) player.x += 6;
+    for (let i = seeds.length - 1; i >= 0; i--) {
+      const s = seeds[i];
+      s.y += s.speed;
+      if (s.y < -30) seeds.splice(i, 1);
+    }
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const e = enemies[i];
+      e.x -= e.speed;
+      e.y += e.speed * 0.5;
+      for (let j = seeds.length - 1; j >= 0; j--) {
+        const s = seeds[j];
+        if (s.x + s.w > e.x && s.x < e.x + e.w && s.y + s.h > e.y && s.y < e.y + e.h) {
+          seeds.splice(j, 1);
+          e.hp--;
+          score++;
+          if (e.hp <= 0) { enemies.splice(i, 1); }
+          break;
+        }
+      }
+      if (e.x < -90) { enemies.splice(i, 1); }
+      if (e.x + e.w >= player.x - 4 && e.x + e.w <= player.x + player.w + 4 && e.y + e.h >= player.y - 4) { over = true; }
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = '#14060a';
+    ctx.fillRect(0, 0, GW, GH);
+    ctx.fillStyle = '#3a1e0b';
+    ctx.fillRect(0, GH - 40, GW, 40);
+    ctx.fillStyle = '#ff7518';
+    ctx.beginPath(); ctx.roundRect(player.x, player.y, player.w, player.h, 10); ctx.fill();
+    ctx.fillStyle = '#2a1608';
+    ctx.beginPath(); ctx.arc(player.x + player.w / 2, player.y + 12, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ff3b30';
+    ctx.beginPath(); ctx.arc(player.x + player.w / 2 - 8, player.y + 6, 5, 0, Math.PI * 2); ctx.arc(player.x + player.w / 2 + 8, player.y + 6, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff3e0';
+    for (const s of seeds) { ctx.fillRect(s.x, s.y, s.w, s.h); }
+    for (const e of enemies) {
+      ctx.fillStyle = '#7a2e00';
+      ctx.beginPath(); ctx.roundRect(e.x, e.y, e.w, e.h, 12); ctx.fill();
+      ctx.fillStyle = '#ff2222';
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2 - 8, e.y + 12, 7, 0, Math.PI * 2); ctx.arc(e.x + e.w / 2 + 8, e.y + 12, 7, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#fff3e0';
+    ctx.font = '16px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('SCORE ' + score, 8, 22);
+    if (over) {
+      ctx.fillStyle = '#ff3b30';
+      ctx.font = '28px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER', GW / 2, GH / 2);
+    }
+  }
+
+  function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
+
+  window.addEventListener('keydown', e => { keys[e.key] = true; if (e.key === ' ') shoot(); });
+  window.addEventListener('keyup', e => { keys[e.key] = false; });
+  document.getElementById('game').addEventListener('pointerdown', () => shoot());
+  reset();
+  last = performance.now();
+  requestAnimationFrame(loop);
+})();
+</script>
 </body>
 </html>
